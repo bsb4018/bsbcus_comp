@@ -9,9 +9,12 @@ from finpred.exception import CustomerException
 from finpred.logger import logger
 
 from finpred.entity.config_entity import DataIngestionConfig
+from finpred.configuration.pipeline.training_config import FinanceConfig
 from finpred.exception import CustomerException
 from finpred.entity.artifact_entity import DataIngestionArtifact
+from finpred.entity.metadata_entity import DataIngestionMetadata
 
+from finpred.configuration.spark_manager import spark_session
 DownloadUrl = namedtuple("DownloadUrl", ["url", "file_path", "n_retry"])
 
 class DataIngestion:
@@ -141,18 +144,77 @@ class DataIngestion:
 
     def convert_files_to_parquet(self) -> str:
         try:
-            pass
+            json_data_dir = self.data_ingestion_config.download_dir
+            data_dir = self.data_ingestion_config.feature_store_dir
+            os.makedirs(data_dir, exist_ok=True)
+            output_file_name = self.data_ingestion_config.file_name
+            file_path = os.path.join(data_dir, f"{output_file_name}")
+            logger.info(f"Parquet file will be created inside: {file_path}")
+            if not os.path.exists(json_data_dir):
+                return file_path
+            for file_name in os.listdir(json_data_dir):
+                json_file_path = os.path.join(json_data_dir, file_name)
+                logger.debug(f"Converting {json_file_path} into parquet format at {file_path}")
+                df = spark_session.read.json(json_file_path)
+                if df.count() > 0:
+                    df.write.mode('append').parquet(file_path)
+                return file_path
         except Exception as e:
             raise CustomerException(e,sys)
 
     def write_metadata(self, file_path: str) -> None:
         try:
-            pass
+            logger.info(f"Writing metadata info into metadata file.")
+            metadata_info = DataIngestionMetadata(metadata_file_path=self.data_ingestion_config.metadata_file_path)
+
+            metadata_info.write_metadata_info(from_date=self.data_ingestion_config.from_date,
+                                              to_date=self.data_ingestion_config.to_date,
+                                              data_file_path=file_path
+                                              )
+            logger.info(f"Metadata has been written.")
         except Exception as e:
             raise CustomerException(e,sys)
 
     def initiate_data_ingestion(self) -> DataIngestionArtifact:
         try:
-            pass
+            logger.info(f"Started downloading json file")
+
+            #Stop downloading same day data if already downloaded 
+            if self.data_ingestion_config.from_date != self.data_ingestion_config.to_date:
+                self.download_files()
+
+            if os.path.exists(self.data_ingestion_config.download_dir):
+                logger.info(f"Converting and combining downloaded json into parquet file")
+                file_path = self.convert_files_to_parquet()
+                self.write_metadata(file_path=file_path)
+
+            feature_store_file_path = os.path.join(self.data_ingestion_config.feature_store_dir,
+                                                   self.data_ingestion_config.file_name)
+
+            artifact = DataIngestionArtifact(
+                feature_store_file_path=feature_store_file_path,
+                download_dir=self.data_ingestion_config.download_dir,
+                metadata_file_path=self.data_ingestion_config.metadata_file_path,
+
+            )
+
+            logger.info(f"Data ingestion artifact: {artifact}")
+            return artifact
         except Exception as e:
             raise CustomerException(e, sys)
+
+def main():
+    try:
+        config = FinanceConfig()
+        data_ingestion_config = config.get_data_ingestion_config()
+        data_ingestion = DataIngestion(data_ingestion_config=data_ingestion_config, n_day_interval=6)
+        data_ingestion.initiate_data_ingestion()
+    except Exception as e:
+        raise CustomerException(e, sys)
+
+if __name__ == "__main__":
+    try:
+        main()
+
+    except Exception as e:
+        logger.exception(e)
