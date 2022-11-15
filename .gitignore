@@ -142,3 +142,5 @@ dmypy.json
 template.py
 test1.csv
 app.py
+upload.py
+start.sh

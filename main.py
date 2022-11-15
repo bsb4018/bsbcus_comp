@@ -5,6 +5,12 @@ from finpred.logger import logger
 from finpred.exception import CustomerException
 from finpred.configuration.pipeline.training_config import FinanceConfig
 from finpred.pipeline.training import TrainingPipeline
+from finpred.constant.environment.variable_key import AWS_ACCESS_KEY_ID_ENV_KEY,AWS_SECRET_ACCESS_KEY_ENV_KEY
+#from dotenv import load_dotenv
+#load_dotenv()
+access_key_id = os.getenv(AWS_ACCESS_KEY_ID_ENV_KEY, )
+secret_access_key = os.getenv(AWS_SECRET_ACCESS_KEY_ENV_KEY, )
+
 
 def start_training(start=False):
     try:
