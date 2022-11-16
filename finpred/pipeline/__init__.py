@@ -1,0 +1,1 @@
+from finpred.pipeline.training import  TrainingPipeline
