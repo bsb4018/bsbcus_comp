@@ -23,7 +23,7 @@ class TrainingPipeline:
         except Exception as e:
             raise CustomerException(e,sys)
 
-    def start_pipeline(self):
+    def start(self):
         try:
             logger.info("Entered 'start_pipeline' method of TrainingPipeline class")
             data_ingestion_artifact = self.start_data_ingestion()
