@@ -1,2 +1,2 @@
-DATABASE_NAME = "fc-bsb-db"
+DATABASE_NAME = "fc-bsb-db2"
 

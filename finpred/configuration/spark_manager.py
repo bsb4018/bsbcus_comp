@@ -26,7 +26,3 @@ spark_session._jsc.hadoopConfiguration().set("com.amazonaws.services.s3.enableV4
 spark_session._jsc.hadoopConfiguration().set("fs.s3a.aws.credentials.provider","org.apache.hadoop.fs.s3a.BasicAWSCredentialsProvider")
 spark_session._jsc.hadoopConfiguration().set("fs.s3a.endpoint", "ap-south-1.amazonaws.com")
 spark_session._jsc.hadoopConfiguration().set(" fs.s3.buffer.dir","tmp")
-
-
-
-'''spark_session = SparkSession.builder.master('local[*]').appName('consumer_complaint').getOrCreate()'''

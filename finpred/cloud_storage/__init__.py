@@ -1,0 +1,1 @@
+from finpred.cloud_storage.simple_storage_service import SimpleStorageService
