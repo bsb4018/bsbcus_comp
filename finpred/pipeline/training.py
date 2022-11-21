@@ -4,7 +4,7 @@ from finpred.exception import CustomerException
 from finpred.logger import logger
 from finpred.configuration.pipeline.training_config import FinanceConfig
 from finpred.components.training.data_ingestion import DataIngestion
-from finpred.entity.artifact_entity import DataIngestionArtifact
+from finpred.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 
 
 class TrainingPipeline:
