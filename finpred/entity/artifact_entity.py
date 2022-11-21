@@ -1,6 +1,12 @@
-from collections import namedtuple
+from dataclasses import dataclass
 
-DataIngestionArtifact = namedtuple("DataIngestionArtifact",
-                                   ["feature_store_file_path", "metadata_file_path", "download_dir"])
+@dataclass
+class DataIngestionArtifact:
+    feature_store_file_path: str
+    metadata_file_path: str
+    download_dir: str
 
-DataValidationArtifact = namedtuple("DataValidationArtifact", ["accepted_file_path", "rejected_dir"])
+@dataclass
+class DataValidationArtifact:
+    accepted_file_path: str
+    rejected_dir: str

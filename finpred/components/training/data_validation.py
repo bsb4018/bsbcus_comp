@@ -38,7 +38,7 @@ class DataValidation(FinanceDataSchema):
 
     def read_data(self) -> DataFrame:
         try:
-            dataframe: DataFrame = spark_session.read_parquet(
+            dataframe: DataFrame = spark_session.read.parquet(
                 self.data_ingestion_artifact.feature_store_file_path)
 
             logger.info(f"Data frame is created using file: {self.data_ingestion_artifact.feature_store_file_path}")
