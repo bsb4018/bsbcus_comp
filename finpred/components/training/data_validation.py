@@ -3,16 +3,17 @@ import sys
 from collections import namedtuple
 from typing import List, Dict
 
-from finpred.exception import CustomerException
-from finpred.logger import logger
-from finpred.entity.schema import FinanceDataSchema
-from finpred.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
-from finpred.entity.config_entity import DataValidationConfig
-from finpred.configuration.spark_manager import spark_session
-
-from pyspark.sql.functions import lit
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
+from pyspark.sql.functions import lit
+
+from finpred.configuration.spark_manager import spark_session
+from finpred.entity.artifact_entity import DataIngestionArtifact
+from finpred.entity.artifact_entity import DataValidationArtifact
+from finpred.entity.config_entity import DataValidationConfig
+from finpred.entity.schema import FinanceDataSchema
+from finpred.exception import CustomerException
+from finpred.logger import logger
 
 COMPLAINT_TABLE = "complaint"
 ERROR_MESSAGE = "error_msg"
@@ -20,38 +21,36 @@ MissingReport = namedtuple("MissingReport", ["total_row", "missing_row", "missin
 
 
 class DataValidation(FinanceDataSchema):
-    def __init__(self, 
+
+    def __init__(self,
                  data_validation_config: DataValidationConfig,
                  data_ingestion_artifact: DataIngestionArtifact,
                  table_name: str = COMPLAINT_TABLE,
-                 schema = FinanceDataSchema()):
-        
+                 schema=FinanceDataSchema()
+                 ):
         try:
             super().__init__()
-            self.data_ingestion_artifact = data_ingestion_artifact,
-            self.data_validation_config = data_validation_config,
-            self.table_name = table_name,
+            self.data_ingestion_artifact: DataIngestionArtifact = data_ingestion_artifact
+            self.data_validation_config = data_validation_config
+            self.table_name = table_name
             self.schema = schema
-
         except Exception as e:
             raise CustomerException(e, sys) from e
 
     def read_data(self) -> DataFrame:
         try:
-            dataframe: DataFrame = spark_session.read_parquet(
-                self.data_ingestion_artifact.feature_store_file_path)
-
+            dataframe: DataFrame = spark_session.read.parquet(
+                self.data_ingestion_artifact.feature_store_file_path
+            )
             logger.info(f"Data frame is created using file: {self.data_ingestion_artifact.feature_store_file_path}")
             logger.info(f"Number of row: {dataframe.count()} and column: {len(dataframe.columns)}")
-            
-            #dataframe, _ = dataframe.randomSplit([0.01, 0.99])
+            dataframe, _ = dataframe.randomSplit([0.01, 0.99])
             return dataframe
-
         except Exception as e:
-            raise CustomerException(e,sys) from e
+            raise CustomerException(e, sys)
 
     @staticmethod
-    def get_missing_report(dataframe: DataFrame) -> Dict[str, MissingReport]:
+    def get_missing_report(dataframe: DataFrame, ) -> Dict[str, MissingReport]:
         try:
             missing_report: Dict[str:MissingReport] = dict()
             logger.info(f"Preparing missing reports for each column")
@@ -60,52 +59,50 @@ class DataValidation(FinanceDataSchema):
             for column in dataframe.columns:
                 missing_row = dataframe.filter(f"{column} is null").count()
                 missing_percentage = (missing_row * 100) / number_of_row
-                missing_report[column] = MissingReport(total_row=number_of_row, missing_row=missing_row, missing_percentage= missing_percentage)
-
+                missing_report[column] = MissingReport(total_row=number_of_row,
+                                                       missing_row=missing_row,
+                                                       missing_percentage=missing_percentage
+                                                       )
             logger.info(f"Missing report prepared: {missing_report}")
             return missing_report
 
         except Exception as e:
-            raise CustomerException(e,sys) from e
+            raise CustomerException(e, sys)
 
     def get_unwanted_and_high_missing_value_columns(self, dataframe: DataFrame, threshold: float = 0.3) -> List[str]:
         try:
             missing_report: Dict[str, MissingReport] = self.get_missing_report(dataframe=dataframe)
-            unwanted_column: List[str] = self.schema.unwanted_columns
 
+            unwanted_column: List[str] = self.schema.unwanted_columns
             for column in missing_report:
                 if missing_report[column].missing_percentage > (threshold * 100):
                     unwanted_column.append(column)
-
                     logger.info(f"Missing report {column}: [{missing_report[column]}]")
-            
             unwanted_column = list(set(unwanted_column))
             return unwanted_column
+
         except Exception as e:
-            raise CustomerException(e,sys) from e
+            raise CustomerException(e, sys)
 
     def drop_unwanted_columns(self, dataframe: DataFrame) -> DataFrame:
         try:
-            unwanted_columns: List = self.get_unwanted_and_high_missing_value_columns(dataframe=dataframe)
+            unwanted_columns: List = self.get_unwanted_and_high_missing_value_columns(dataframe=dataframe, )
             logger.info(f"Dropping feature: {','.join(unwanted_columns)}")
-
             unwanted_dataframe: DataFrame = dataframe.select(unwanted_columns)
+
             unwanted_dataframe = unwanted_dataframe.withColumn(ERROR_MESSAGE, lit("Contains many missing values"))
-            
+
             rejected_dir = os.path.join(self.data_validation_config.rejected_data_dir, "missing_data")
             os.makedirs(rejected_dir, exist_ok=True)
-            
             file_path = os.path.join(rejected_dir, self.data_validation_config.file_name)
-            logger.info(f"Writing dropped column into file: [{file_path}]")
 
+            logger.info(f"Writing dropped column into file: [{file_path}]")
             unwanted_dataframe.write.mode("append").parquet(file_path)
             dataframe: DataFrame = dataframe.drop(*unwanted_columns)
-            
             logger.info(f"Remaining number of columns: [{dataframe.columns}]")
             return dataframe
-        
         except Exception as e:
-            raise CustomerException(e,sys) from e
+            raise CustomerException(e, sys)
 
     @staticmethod
     def get_unique_values_of_each_column(dataframe: DataFrame) -> None:
@@ -114,9 +111,9 @@ class DataValidation(FinanceDataSchema):
                 n_unique: int = dataframe.select(col(column)).distinct().count()
                 n_missing: int = dataframe.filter(col(column).isNull()).count()
                 missing_percentage: float = (n_missing * 100) / dataframe.count()
-                logger.info(f"Column: {column} contains {n_unique} value and missing percentage: {missing_percentage} %.")
+                logger.info(f"Column: {column} contains {n_unique} value and missing perc: {missing_percentage} %.")
         except Exception as e:
-            raise CustomerException(e,sys) from e
+            raise CustomerException(e, sys)
 
     def is_required_columns_exist(self, dataframe: DataFrame):
         try:
@@ -128,8 +125,9 @@ class DataValidation(FinanceDataSchema):
                  Expected columns: {self.schema.required_columns}\n\
                  Found columns: {columns}\
                  ")
+
         except Exception as e:
-            raise CustomerException(e,sys) from e
+            raise CustomerException(e, sys)
 
     def initiate_data_validation(self) -> DataValidationArtifact:
         try:
@@ -158,48 +156,5 @@ class DataValidation(FinanceDataSchema):
                                               )
             logger.info(f"Data validation artifact: [{artifact}]")
             return artifact
-            
         except Exception as e:
-            raise CustomerException(e,sys) from e
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            raise CustomerException(e, sys)

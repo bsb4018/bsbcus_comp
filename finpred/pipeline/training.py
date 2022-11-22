@@ -1,11 +1,11 @@
 import sys
+from finpred.components.training.data_transformation import DataTransformation
 from finpred.components.training.data_validation import DataValidation
 from finpred.exception import CustomerException
 from finpred.logger import logger
 from finpred.configuration.pipeline.training_config import FinanceConfig
 from finpred.components.training.data_ingestion import DataIngestion
-from finpred.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
-
+from finpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact
 
 class TrainingPipeline:
     def __init__(self, finance_config: FinanceConfig):
@@ -34,12 +34,28 @@ class TrainingPipeline:
             return data_validation_artifact
         except Exception as e:
             raise CustomerException(e, sys)
+    
+    def start_data_transformation(self, data_validation_artifact: DataValidationArtifact) -> DataTransformationArtifact:
+        try:
+            data_transformation_config = self.finance_config.get_data_transformation_config()
+            data_transformation = DataTransformation(data_validation_artifact=data_validation_artifact,
+                                                     data_transformation_config=data_transformation_config
+
+                                                     )
+            data_transformation_artifact = data_transformation.initiate_data_transformation()
+            return data_transformation_artifact
+        except Exception as e:
+            raise CustomerException(e, sys)
 
     def start(self):
         try:
             logger.info("Entered 'start_pipeline' method of TrainingPipeline class")
             data_ingestion_artifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
+            data_transformation_artifact = self.start_data_transformation(
+                data_validation_artifact=data_validation_artifact)
+
+
         except Exception as e:
             raise CustomerException(e, sys)
 
