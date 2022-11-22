@@ -1,10 +1,14 @@
-from typing import List, Dict
-import os, sys
-from pyspark.sql import DataFrame
+from typing import List
 from pyspark.sql.types import TimestampType, StringType, FloatType, StructType, StructField
 from finpred.exception import CustomerException
+import os, sys
+
+from pyspark.sql import DataFrame
+from typing import Dict
+
 
 class FinanceDataSchema:
+
     def __init__(self):
         self.col_company_response: str = 'company_response'
         self.col_consumer_consent_provided: str = 'consumer_consent_provided'
@@ -23,7 +27,7 @@ class FinanceDataSchema:
         self.col_sub_product: str = "sub_product"
         self.col_complaint_what_happened: str = "complaint_what_happened"
         self.col_company_public_response: str = "company_public_response"
-    
+
     @property
     def dataframe_schema(self) -> StructType:
         try:
@@ -43,9 +47,9 @@ class FinanceDataSchema:
 
             ])
             return schema
+
         except Exception as e:
             raise CustomerException(e, sys) from e
-
 
     @property
     def target_column(self) -> str:
@@ -124,6 +128,8 @@ class FinanceDataSchema:
                    [self.col_date_sent_to_company, self.col_date_received]
         return features
 
+
+
     @property
     def unwanted_columns(self) -> List[str]:
         features = [
@@ -151,153 +157,3 @@ class FinanceDataSchema:
     @property
     def prediction_label_column_name(self) -> str:
         return f"{self.prediction_column_name}_{self.target_column}"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
