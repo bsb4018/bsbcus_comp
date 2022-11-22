@@ -137,8 +137,8 @@ class DataTransformation():
             logger.info(f"Train dataset has number of row: [{train_dataframe.count()}] and"
                         f" column: [{len(train_dataframe.columns)}]")
 
-            logger.info(f"Train dataset has number of row: [{train_dataframe.count()}] and"
-                        f" column: [{len(train_dataframe.columns)}]")
+            logger.info(f"Test dataset has number of row: [{test_dataframe.count()}] and"
+                        f" column: [{len(test_dataframe.columns)}]")
 
             pipeline = self.get_data_transformation_pipeline()
 
