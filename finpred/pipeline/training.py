@@ -1,11 +1,12 @@
 import sys
 from finpred.components.training.data_transformation import DataTransformation
 from finpred.components.training.data_validation import DataValidation
+from finpred.components.training.model_trainer import ModelTrainer
 from finpred.exception import CustomerException
 from finpred.logger import logger
 from finpred.configuration.pipeline.training_config import FinanceConfig
 from finpred.components.training.data_ingestion import DataIngestion
-from finpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact
+from finpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact, ModelTrainerArtifact
 
 class TrainingPipeline:
     def __init__(self, finance_config: FinanceConfig):
@@ -47,6 +48,16 @@ class TrainingPipeline:
         except Exception as e:
             raise CustomerException(e, sys)
 
+    def start_model_trainer(self, data_transformation_artifact: DataTransformationArtifact) -> ModelTrainerArtifact:
+        try:
+            model_trainer = ModelTrainer(data_transformation_artifact=data_transformation_artifact,
+                                         model_trainer_config=self.finance_config.get_model_trainer_config()
+                                         )
+            model_trainer_artifact = model_trainer.initiate_model_training()
+            return model_trainer_artifact
+        except Exception as e:
+            raise CustomerException(e, sys)
+
     def start(self):
         try:
             logger.info("Entered 'start_pipeline' method of TrainingPipeline class")
@@ -54,7 +65,7 @@ class TrainingPipeline:
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(
                 data_validation_artifact=data_validation_artifact)
-
+            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
 
         except Exception as e:
             raise CustomerException(e, sys)

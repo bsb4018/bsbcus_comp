@@ -2,7 +2,7 @@ from finpred.logger import logger
 from finpred.exception import CustomerException
 import os, sys
 from datetime import datetime
-from finpred.entity.config_entity import DataTransformationConfig, TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig
+from finpred.entity.config_entity import DataTransformationConfig, ModelTrainerConfig, TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig
 from finpred.constant import TIMESTAMP
 from finpred.constant.training_pipeline_constants import *
 from finpred.entity.metadata_entity import DataIngestionMetadata
@@ -118,3 +118,33 @@ class FinanceConfig:
             return data_transformation_config
         except Exception as e:
             raise CustomerException(e, sys)
+
+    def get_model_trainer_config(self) -> ModelTrainerConfig:
+        try:
+            model_trainer_dir = os.path.join(self.pipeline_config.artifact_dir,
+                                             MODEL_TRAINER_DIR, self.timestamp)
+            trained_model_file_path = os.path.join(
+                model_trainer_dir, MODEL_TRAINER_TRAINED_MODEL_DIR, MODEL_TRAINER_MODEL_NAME
+            )
+            label_indexer_model_dir = os.path.join(
+                model_trainer_dir, MODEL_TRAINER_LABEL_INDEXER_DIR
+            )
+            model_trainer_config = ModelTrainerConfig(base_accuracy=MODEL_TRAINER_BASE_ACCURACY,
+                                                      trained_model_file_path=trained_model_file_path,
+                                                      metric_list=MODEL_TRAINER_MODEL_METRIC_NAMES,
+                                                      label_indexer_model_dir=label_indexer_model_dir
+                                                      )
+            logger.info(f"Model trainer config: {model_trainer_config}")
+            return model_trainer_config
+        except Exception as e:
+            raise CustomerException(e, sys)
+
+
+
+
+
+
+
+
+
+    

@@ -90,7 +90,8 @@ class DataTransformation():
 
         except Exception as e:
             raise CustomerException(e, sys)
-
+    
+    '''
     def get_balanced_shuffled_dataframe(self, dataframe: DataFrame) -> DataFrame:
         try:
             count_of_each_cat = dataframe.groupby(self.schema.target_column).count().collect()
@@ -123,12 +124,13 @@ class DataTransformation():
             return selected_df
         except Exception as e:
             raise CustomerException(e, sys)
+    '''
 
     def initiate_data_transformation(self) -> DataTransformationArtifact:
         try:
             logger.info(f">>>>>>>>>>>Started data transformation <<<<<<<<<<<<<<<")
             dataframe: DataFrame = self.read_data()
-            # dataframe = self.get_balanced_shuffled_dataframe(dataframe=dataframe)
+            #dataframe = self.get_balanced_shuffled_dataframe(dataframe=dataframe)
             logger.info(f"Number of row: [{dataframe.count()}] and column: [{len(dataframe.columns)}]")
 
             test_size = self.data_tf_config.test_size
