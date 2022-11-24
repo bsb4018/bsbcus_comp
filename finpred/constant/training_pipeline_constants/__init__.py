@@ -7,7 +7,7 @@ from finpred.constant.training_pipeline_constants.data_ingestion import *
 from finpred.constant.training_pipeline_constants.data_validation import *
 from finpred.constant.training_pipeline_constants.data_transformation import *
 from finpred.constant.training_pipeline_constants.model_trainer import *
-
+from finpred.constant.training_pipeline_constants.model_evaluation import *
 
 
 

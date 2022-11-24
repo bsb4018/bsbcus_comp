@@ -1,12 +1,13 @@
 import sys
 from finpred.components.training.data_transformation import DataTransformation
 from finpred.components.training.data_validation import DataValidation
+from finpred.components.training.model_evaluation import ModelEvaluation
 from finpred.components.training.model_trainer import ModelTrainer
 from finpred.exception import CustomerException
 from finpred.logger import logger
 from finpred.configuration.pipeline.training_config import FinanceConfig
 from finpred.components.training.data_ingestion import DataIngestion
-from finpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact, ModelTrainerArtifact
+from finpred.entity.artifact_entity import DataIngestionArtifact, DataTransformationArtifact, DataValidationArtifact, ModelEvaluationArtifact, ModelTrainerArtifact
 
 class TrainingPipeline:
     def __init__(self, finance_config: FinanceConfig):
@@ -58,6 +59,17 @@ class TrainingPipeline:
         except Exception as e:
             raise CustomerException(e, sys)
 
+    def start_model_evaluation(self, data_validation_artifact, model_trainer_artifact) -> ModelEvaluationArtifact:
+        try:
+            model_eval_config = self.finance_config.get_model_evaluation_config()
+            model_eval = ModelEvaluation(data_validation_artifact=data_validation_artifact,
+                                         model_trainer_artifact=model_trainer_artifact,
+                                         model_eval_config=model_eval_config
+                                         )
+            return model_eval.initiate_model_evaluation()
+        except Exception as e:
+            raise CustomerException(e, sys)
+
     def start(self):
         try:
             logger.info("Entered 'start_pipeline' method of TrainingPipeline class")
@@ -66,6 +78,9 @@ class TrainingPipeline:
             data_transformation_artifact = self.start_data_transformation(
                 data_validation_artifact=data_validation_artifact)
             model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
+            model_eval_artifact = self.start_model_evaluation(data_validation_artifact=data_validation_artifact,
+                                                              model_trainer_artifact=model_trainer_artifact
+                                                              )
 
         except Exception as e:
             raise CustomerException(e, sys)
