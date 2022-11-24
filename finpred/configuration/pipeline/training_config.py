@@ -2,7 +2,7 @@ from finpred.logger import logger
 from finpred.exception import CustomerException
 import os, sys
 from datetime import datetime
-from finpred.entity.config_entity import DataTransformationConfig, ModelEvaluationConfig, ModelTrainerConfig, TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig
+from finpred.entity.config_entity import DataTransformationConfig, ModelEvaluationConfig, ModelPusherConfig, ModelTrainerConfig, TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig
 from finpred.constant import TIMESTAMP
 from finpred.constant.training_pipeline_constants import *
 from finpred.entity.metadata_entity import DataIngestionMetadata
@@ -161,6 +161,17 @@ class FinanceConfig:
             return model_evaluation_config
 
         except Exception as e:
+            raise CustomerException(e, sys)
+
+    def get_model_pusher_config(self) -> ModelPusherConfig:
+        try:
+            model_pusher_config = ModelPusherConfig(
+                model_dir=S3_MODEL_DIR_KEY,
+                bucket_name=S3_MODEL_BUCKET_NAME
+            )
+            logger.info(f"Model pusher config: {model_pusher_config}")
+            return model_pusher_config
+        except  Exception as e:
             raise CustomerException(e, sys)
 
 

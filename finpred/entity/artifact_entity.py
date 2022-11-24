@@ -68,7 +68,7 @@ class ModelEvaluationArtifact:
         return str(self.to_dict())
 
 
-
+ModelPusherArtifact = namedtuple("ModelEvaluationArtifact", ["model_pushed_dir"])
 
 
 
