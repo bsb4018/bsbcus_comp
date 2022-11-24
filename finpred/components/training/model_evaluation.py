@@ -11,7 +11,7 @@ from finpred.configuration.spark_manager import spark_session
 from finpred.utils import get_score
 
 from pyspark.sql.types import StringType, FloatType, StructType, StructField
-from finpred.entity.estimator import S3FinanceEstimator
+from finpred.ml.estimator import S3FinanceEstimator
 from finpred.data_access.model_eval_artifact import ModelEvaluationArtifactData
 
 

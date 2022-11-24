@@ -1,1 +1,2 @@
 from finpred.pipeline.training import TrainingPipeline
+from finpred.pipeline.prediction import PredictionPipeline

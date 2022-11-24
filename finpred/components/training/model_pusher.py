@@ -5,7 +5,7 @@ from finpred.logger import logger
 from finpred.entity.config_entity import ModelPusherConfig
 from finpred.entity.artifact_entity import ModelPusherArtifact, ModelTrainerArtifact
 from pyspark.ml.pipeline import PipelineModel
-from finpred.entity.estimator import S3FinanceEstimator
+from finpred.ml.estimator import S3FinanceEstimator
 import os
 
 
