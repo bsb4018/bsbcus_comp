@@ -1,10 +1,8 @@
 from typing import List
-from pyspark.sql.types import TimestampType, StringType, FloatType, StructType, StructField
+from pyspark.sql.types import TimestampType, StringType, StructType, StructField
 from finpred.exception import CustomerException
-import os, sys
+import sys
 
-from pyspark.sql import DataFrame
-from typing import Dict
 
 
 class FinanceDataSchema:

@@ -1,5 +1,5 @@
 from finpred.constant.model import S3_MODEL_BUCKET_NAME, S3_MODEL_DIR_KEY
-from finpred.constant.prediction_pipeline_constants.prediction_constants import S3_DATA_BUCKET_NAME, PYSPARK_S3_ROOT
+from finpred.constant.prediction_pipeline_constants.model_prediction import S3_DATA_BUCKET_NAME, PYSPARK_S3_ROOT
 from finpred.entity.config_entity import PredictionPipelineConfig
 from finpred.entity.schema import FinanceDataSchema
 from pyspark.sql import DataFrame
@@ -120,7 +120,6 @@ class PredictionPipeline:
                 archive_file_path = os.path.join(self.pipeline_config.archive_dir, os.path.basename(valid_file))
                 logger.info(f"Arching valid input files at: [{archive_file_path}]")
                 self.write_file(dataframe=dataframe, file_path=archive_file_path)
-
 
         except Exception as e:
             raise CustomerException(e, sys)
