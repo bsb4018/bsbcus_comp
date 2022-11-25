@@ -6,7 +6,7 @@ from finpred.entity.config_entity import DataTransformationConfig, ModelEvaluati
 from finpred.constant import TIMESTAMP
 from finpred.constant.training_pipeline_constants import *
 from finpred.entity.metadata_entity import DataIngestionMetadata
-from finpred.constant.model import S3_MODEL_DIR_KEY, S3_MODEL_BUCKET_NAME
+from finpred.constant.model import S3_MODEL_DIR_KEY, S3_MODEL_BUCKET_NAME, MODEL_SAVED_DIR
 class FinanceConfig:
     def __init__(self, pipeline_name = PIPELINE_NAME, timestamp = TIMESTAMP):
         self.timestamp = timestamp

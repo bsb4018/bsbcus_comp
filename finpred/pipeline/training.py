@@ -3,6 +3,7 @@ from finpred.components.training.data_transformation import DataTransformation
 from finpred.components.training.data_validation import DataValidation
 from finpred.components.training.model_evaluation import ModelEvaluation
 from finpred.components.training.model_trainer import ModelTrainer
+from finpred.components.training.model_pusher import ModelPusher
 from finpred.exception import CustomerException
 from finpred.logger import logger
 from finpred.configuration.pipeline.training_config import FinanceConfig
@@ -69,6 +70,16 @@ class TrainingPipeline:
             return model_eval.initiate_model_evaluation()
         except Exception as e:
             raise CustomerException(e, sys)
+    
+    def start_model_pusher(self, model_trainer_artifact: ModelTrainerArtifact):
+        try:
+            model_pusher_config = self.finance_config.get_model_pusher_config()
+            model_pusher = ModelPusher(model_trainer_artifact=model_trainer_artifact,
+                                       model_pusher_config=model_pusher_config
+                                       )
+            return model_pusher.initiate_model_pusher()
+        except Exception as e:
+            raise CustomerException(e, sys)
 
     def start(self):
         try:
@@ -81,7 +92,8 @@ class TrainingPipeline:
             model_eval_artifact = self.start_model_evaluation(data_validation_artifact=data_validation_artifact,
                                                               model_trainer_artifact=model_trainer_artifact
                                                               )
-
+            if model_eval_artifact.model_accepted:
+                self.start_model_pusher(model_trainer_artifact=model_trainer_artifact)
         except Exception as e:
             raise CustomerException(e, sys)
 
