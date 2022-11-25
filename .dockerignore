@@ -9,3 +9,9 @@ venv/*
 credential.txt
 .env
 ../.idea/
+flowchart
+assignment
+LICENSE
+README.md 
+notebook
+airflow/airflow.cfg

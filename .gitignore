@@ -2,8 +2,16 @@
 __pycache__/
 *.py[cod]
 *$py.class
-airflow/*
+airflow/logs/*
+airflow/airflow.db
+airflow/webserver_config.py 
+airlfow/airflow.cfg
+
+
+.vscode
 # C extensions
+.terraform.lock.hcl
+.terraform
 *.so
 credential.txt
 .gitconfig
@@ -13,7 +21,7 @@ saved_models/*
 .local
 .ssh
 .vscode-server
-finance_artifact/*
+customer_artifact/*
 # Distribution / packaging
 .Python
 .idea/
@@ -36,10 +44,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-finance_artifact/
-consumer_artifact/
-artifact/
-logs/
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -141,10 +145,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
 # Extras
 template.py
 test1.csv
 app.py
 upload.py
 start.sh
+logs/
