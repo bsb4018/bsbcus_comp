@@ -37,6 +37,7 @@ share/python-wheels/
 MANIFEST
 
 finance_artifact/
+consumer_artifact/
 artifact/
 logs/
 # PyInstaller

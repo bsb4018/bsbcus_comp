@@ -1,5 +1,5 @@
 from collections import namedtuple
-from finpred.constant.prediction_pipeline_constants.prediction_constants import ARCHIVE_DIR, INPUT_DIR, FAILED_DIR, PREDICTION_DIR, REGION_NAME
+from finpred.constant.prediction_pipeline_constants.model_prediction import ARCHIVE_DIR, INPUT_DIR, FAILED_DIR, PREDICTION_DIR, REGION_NAME
 
 
 TrainingPipelineConfig = namedtuple("PipelineConfig", ["pipeline_name", "artifact_dir"])

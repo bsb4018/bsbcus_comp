@@ -10,6 +10,7 @@ import argparse
 from finpred.logger import logger
 from finpred.exception import CustomerException
 from finpred.configuration.pipeline.training_config import FinanceConfig
+from finpred.pipeline.prediction import PredictionPipeline
 from finpred.pipeline.training import TrainingPipeline
 
 
@@ -26,7 +27,11 @@ def start_training(start=False):
 
 def start_prediction(start=False):
     try:
-        pass
+        if not start:
+            return None
+        print("Prediction started")
+        PredictionPipeline().start_batch_prediction()
+        
     except Exception as e:
         raise CustomerException(e, sys)
 
