@@ -47,3 +47,17 @@ def get_score(dataframe: DataFrame, metric_name, label_col, prediction_col) -> f
         return score
     except Exception as e:
         raise CustomerException(e, sys)
+
+def create_directories(directories_list: List[str], new_directory=False):
+    try:
+
+        for dir_path in directories_list:
+            if dir_path.startswith("s3"):
+                continue
+            if os.path.exists(dir_path) and new_directory:
+                shutil.rmtree(dir_path)
+                logger.info(f"Directory removed: {dir_path}")
+            os.makedirs(dir_path, exist_ok=True)
+            logger.info(f"Directory created: {dir_path}")
+    except Exception as e:
+        raise CustomerException(e, sys)
