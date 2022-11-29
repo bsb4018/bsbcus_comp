@@ -155,7 +155,7 @@ with DAG(
         task_id="model_evaluation", python_callable=model_evaluation
     )   
 
-    push_model  =PythonOperator(
+    push_model = PythonOperator(
             task_id="push_model",
             python_callable=push_model
 
