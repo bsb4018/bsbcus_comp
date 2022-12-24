@@ -2,9 +2,9 @@ from collections import namedtuple
 from finpred.constant.prediction_pipeline_constants.model_prediction import ARCHIVE_DIR, INPUT_DIR, FAILED_DIR, PREDICTION_DIR, REGION_NAME
 
 
-TrainingPipelineConfig = namedtuple("PipelineConfig", ["pipeline_name", "artifact_dir"])
+TrainingPipelineConfig = namedtuple("PipelineConfig",  ["pipeline_name", "artifact_dir"])
 
-DataIngestionConfig = namedtuple("DataIngestionConfig", ["from_date",
+DataIngestionConfig = namedtuple("DataIngestionConfig",  ["from_date",
                                                          "to_date",
                                                          "data_ingestion_dir",
                                                          "download_dir",
