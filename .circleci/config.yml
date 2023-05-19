@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  aws-ecr: circleci/aws-ecr@8.1.3
 
 jobs:
   continuous-integration:
@@ -20,16 +18,16 @@ jobs:
   
   continuous-delivery:
     docker:
-      - image: cimg/base:stable
+      - image: google/cloud-sdk
     resource_class: medium
     environment:
-      REPOSITORY: customer-complaint
-      IMAGE_NAME: customer-complaint
+      REPOSITORY: finance-complaint
+      IMAGE_NAME: finance-complaint
       IMAGE_TAG: latest
     steps:
       - checkout
       - run:
-          name: Login to Amazon ECR
+          name: google cloud authentication
           command: |
             echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
@@ -55,8 +53,8 @@ jobs:
     machine: true
     resource_class: machine-learning-01/self-hosted-1
     environment:
-      REPOSITORY: customer-complaint
-      GAR_IMAGE_NAME: customer-complaint
+      REPOSITORY: finance-complaint
+      GAR_IMAGE_NAME: finance-complaint
       IMAGE_TAG: latest
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -82,7 +80,7 @@ jobs:
         
       - run: 
           name: Set env variable
-          command: echo 'export IMAGE_NAME="${GOOGLE_COMPUTE_ZONE}-docker.pkg.dev/${GOOGLE_PROJECT_ID}/$REPOSITORY/customer-complaint:$IMAGE_TAG"' >> "$BASH_ENV"
+          command: echo 'export IMAGE_NAME="${GOOGLE_COMPUTE_ZONE}-docker.pkg.dev/${GOOGLE_PROJECT_ID}/$REPOSITORY/finance-complaint:$IMAGE_TAG"' >> "$BASH_ENV"
 
       - run:
           name: start the containers
